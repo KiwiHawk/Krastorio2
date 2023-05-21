@@ -4,8 +4,8 @@
   "title": "Krastorio 2",
   "description": "An overhaul mod focusing on end-game technologies and moderately increased complexity.",
   "author": "Linver, Krastor, raiguard",
-  "contact": "https://lists.sr.ht/~raiguard/factorio-mods-discuss",
-  "homepage": "https://sr.ht/~raiguard/factorio-mods",
+  "contact": "https://github.com/raiguard/Krastorio2/issues",
+  "homepage": "https://discord.gg/ECBzaXu",
   "factorio_version": "1.1",
   "dependencies": [
     "base >= 1.1.74",
@@ -48,15 +48,11 @@
     "! laborat >= 0.1.0"
   ],
   "package": {
-    "ignore": [
-      ".crowdin.yml",
-      ".gitattributes",
-      "images",
-      ".kakrc",
-      ".mailmap",
-      "stylua.toml",
-      "TODO.md",
-      ".vscode"
-    ]
+    "git_publish_branch": "master",
+    "ignore": [ "TODO.md", "crowdin.yml", "images", "stylua.toml", "tests" ],
+    "scripts": {
+      "prepublish": "factorio-crowdin-sync"
+    },
+    "sync_portal_details": true
   }
 }
