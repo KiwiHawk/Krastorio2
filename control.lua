@@ -1,7 +1,10 @@
 local handler = require("__core__/lualib/event_handler")
 
+handler.add_lib(require("__flib__/gui-lite"))
+
 handler.add_lib(require("__Krastorio2__/scripts/creep-collector"))
 handler.add_lib(require("__Krastorio2__/scripts/energy-absorber"))
+handler.add_lib(require("__Krastorio2__/scripts/intergalactic-transceiver"))
 handler.add_lib(require("__Krastorio2__/scripts/jackhammer"))
 handler.add_lib(require("__Krastorio2__/scripts/loader-snapping"))
 handler.add_lib(require("__Krastorio2__/scripts/offshore-pump"))
@@ -12,10 +15,8 @@ handler.add_lib(require("__Krastorio2__/scripts/virus"))
 
 local gui = require("__flib__/gui")
 local migration = require("__flib__/migration")
-local on_tick_n = require("__flib__/on-tick-n")
 
 -- local creep = require("__Krastorio2__/scripts/creep")
-local intergalactic_transceiver = require("__Krastorio2__/scripts/intergalactic-transceiver")
 local migrations = require("__Krastorio2__/scripts/migrations")
 local planetary_teleporter = require("__Krastorio2__/scripts/planetary-teleporter")
 local roboport = require("__Krastorio2__/scripts/roboport")
@@ -28,7 +29,7 @@ local tesla_coil = require("__Krastorio2__/scripts/tesla-coil")
 -- INTERFACES
 
 -- remote.add_interface("kr-creep", creep.remote_interface)
-remote.add_interface("kr-intergalactic-transceiver", intergalactic_transceiver.remote_interface)
+-- remote.add_interface("kr-intergalactic-transceiver", intergalactic_transceiver.remote_interface)
 -- remote.add_interface("kr-radioactivity", radioactivity.remote_interface)
 
 -- BOOTSTRAP
@@ -36,12 +37,8 @@ remote.add_interface("kr-intergalactic-transceiver", intergalactic_transceiver.r
 local legacy_lib = {}
 
 function legacy_lib.on_init()
-  -- Initialize libraries
-  on_tick_n.init()
-
   -- Initialize `global` table
   -- creep.init()
-  intergalactic_transceiver.init()
   planetary_teleporter.init()
   roboport.init()
   tesla_coil.init()
@@ -96,11 +93,7 @@ local function on_entity_created(e)
     return
   end
 
-  if entity_name == "kr-intergalactic-transceiver" then
-    intergalactic_transceiver.build(entity)
-  elseif entity_name == "kr-activated-intergalactic-transceiver" then
-    intergalactic_transceiver.build_activated(entity)
-  elseif entity_name == "kr-planetary-teleporter" then
+  if entity_name == "kr-planetary-teleporter" then
     planetary_teleporter.build(entity, e.tags)
   elseif entity_name == "kr-tesla-coil" then
     tesla_coil.build(entity)
@@ -119,11 +112,7 @@ local function on_entity_destroyed(e)
     return
   end
   local entity_name = entity.name
-  if entity_name == "kr-intergalactic-transceiver" then
-    intergalactic_transceiver.destroy(entity)
-  elseif entity_name == "kr-inactive-intergalactic-transceiver" then
-    intergalactic_transceiver.destroy_inactive(entity)
-  elseif entity_name == "kr-planetary-teleporter" then
+  if entity_name == "kr-planetary-teleporter" then
     planetary_teleporter.destroy(entity)
   elseif entity_name == "kr-tesla-coil" then
     tesla_coil.destroy(entity)
@@ -172,9 +161,7 @@ end
 local function handle_gui_event(e)
   local msg = gui.read_action(e)
   if msg then
-    if msg.gui == "intergalactic_transceiver" then
-      intergalactic_transceiver.gui_actions[msg.action](e)
-    elseif msg.gui == "planetary_teleporter" then
+    if msg.gui == "planetary_teleporter" then
       planetary_teleporter.handle_gui_action(msg, e)
     elseif msg.gui == "roboport" then
       roboport.handle_gui_action(msg, e)
@@ -195,9 +182,7 @@ legacy_lib.events[defines.events.on_gui_opened] = function(e)
         return
       end
       local name = entity.name
-      if name == "kr-intergalactic-transceiver" then
-        intergalactic_transceiver.create_gui(player, entity)
-      elseif name == "kr-planetary-teleporter" then
+      if name == "kr-planetary-teleporter" then
         planetary_teleporter.create_gui(player, entity)
       elseif entity.type == "roboport" then
         roboport.update_gui(player, entity)
@@ -299,23 +284,9 @@ legacy_lib.events[defines.events.on_script_trigger_effect] = function(e)
 end
 
 legacy_lib.events[defines.events.on_tick] = function()
-  intergalactic_transceiver.iterate()
   -- NOTE: These two are out of order on purpose, update_gui_statuses() must run first
   planetary_teleporter.update_gui_statuses()
   planetary_teleporter.update_all_destination_availability()
-
-  local tasks = on_tick_n.retrieve(game.tick)
-  if tasks then
-    for _, task in pairs(tasks) do
-      if task.handler == "it_cutscene" then
-        intergalactic_transceiver.cutscene[task.action](task.force_index)
-      end
-    end
-  end
 end
-
-legacy_lib.on_nth_tick = {
-  [180] = intergalactic_transceiver.spawn_flying_texts,
-}
 
 handler.add_lib(legacy_lib)
