@@ -4,7 +4,6 @@ local table = require("__flib__/table")
 local compatibility = require("__Krastorio2__/scripts/compatibility")
 local freeplay = require("__Krastorio2__/scripts/freeplay")
 local planetary_teleporter = require("__Krastorio2__/scripts/planetary-teleporter")
-local roboport = require("__Krastorio2__/scripts/roboport")
 local shelter = require("__Krastorio2__/scripts/shelter")
 local tesla_coil = require("__Krastorio2__/scripts/tesla-coil")
 local util = require("__Krastorio2__/scripts/util")
@@ -19,17 +18,12 @@ function migrations.generic()
   freeplay.disable_rocket_victory()
   util.ensure_turret_force()
 
-  roboport.find_variants()
   tesla_coil.get_absorber_buffer_capacity()
 
   compatibility.aai_industry()
   compatibility.disco_science()
   compatibility.nuclear_fuel()
   compatibility.schall_uranium()
-
-  for _, player in pairs(game.players) do
-    roboport.refresh_gui(player)
-  end
 end
 
 --- @param filters EntityPrototypeFilter[]

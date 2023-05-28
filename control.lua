@@ -10,6 +10,7 @@ handler.add_lib(require("__Krastorio2__/scripts/loader-snapping"))
 handler.add_lib(require("__Krastorio2__/scripts/offshore-pump"))
 handler.add_lib(require("__Krastorio2__/scripts/patreon"))
 handler.add_lib(require("__Krastorio2__/scripts/radioactivity"))
+handler.add_lib(require("__Krastorio2__/scripts/roboport"))
 handler.add_lib(require("__Krastorio2__/scripts/shelter"))
 handler.add_lib(require("__Krastorio2__/scripts/virus"))
 
@@ -19,7 +20,6 @@ local migration = require("__flib__/migration")
 -- local creep = require("__Krastorio2__/scripts/creep")
 local migrations = require("__Krastorio2__/scripts/migrations")
 local planetary_teleporter = require("__Krastorio2__/scripts/planetary-teleporter")
-local roboport = require("__Krastorio2__/scripts/roboport")
 local tesla_coil = require("__Krastorio2__/scripts/tesla-coil")
 
 -- COMMANDS
@@ -40,7 +40,6 @@ function legacy_lib.on_init()
   -- Initialize `global` table
   -- creep.init()
   planetary_teleporter.init()
-  roboport.init()
   tesla_coil.init()
 
   -- Initialize mod
@@ -57,17 +56,6 @@ end
 legacy_lib.events = {}
 
 -- CUSTOM INPUT
-
-legacy_lib.events["kr-change-roboport-state"] = function(e)
-  local player = game.get_player(e.player_index)
-  if not player then
-    return
-  end
-  local selected = player.selected
-  if selected and selected.valid and selected.type == "roboport" then
-    roboport.change_mode(selected, player)
-  end
-end
 
 -- ENTITY
 
@@ -163,8 +151,6 @@ local function handle_gui_event(e)
   if msg then
     if msg.gui == "planetary_teleporter" then
       planetary_teleporter.handle_gui_action(msg, e)
-    elseif msg.gui == "roboport" then
-      roboport.handle_gui_action(msg, e)
     end
     return true
   end
@@ -184,8 +170,6 @@ legacy_lib.events[defines.events.on_gui_opened] = function(e)
       local name = entity.name
       if name == "kr-planetary-teleporter" then
         planetary_teleporter.create_gui(player, entity)
-      elseif entity.type == "roboport" then
-        roboport.update_gui(player, entity)
       end
     end
   end
@@ -201,12 +185,10 @@ legacy_lib.events[defines.events.on_player_created] = function(e)
     return
   end
   planetary_teleporter.request_translation(player)
-  roboport.refresh_gui(player)
 end
 
 legacy_lib.events[defines.events.on_player_removed] = function(e)
   planetary_teleporter.clean_up_player(e.player_index)
-  roboport.destroy_gui(e.player_index)
 end
 
 legacy_lib.events[defines.events.on_player_setup_blueprint] = function(e)
