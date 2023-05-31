@@ -1,5 +1,6 @@
 -- Adding a key to change inserter vectors (only belt lane)
 data:extend({
+  -- TODO: Remove me!
   {
     type = "custom-input",
     name = "kr-inserter-change-lane",

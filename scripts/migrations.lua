@@ -277,6 +277,15 @@ migrations.versions = {
       end
     end
   end,
+  ["2.0.0"] = function()
+    for unit_number, data in pairs(global.planetary_teleporter.data) do
+      global.planetary_teleporter[unit_number] = data
+    end
+    global.planetary_teleporter.data = nil
+    global.planetary_teleporter.guis = nil
+    global.planetary_teleporter.players = nil
+    global.planetary_teleporter_gui = {}
+  end,
 }
 
 return migrations

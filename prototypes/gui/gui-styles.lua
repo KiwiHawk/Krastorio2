@@ -344,53 +344,25 @@ styles["kr-wiki-image-flow"] = {
 
 -- PLANETARY TELEPORTER
 
-styles.kr_selected_frame_action_button = {
-  type = "button_style",
-  parent = "frame_action_button",
-  default_font_color = button_hovered_font_color,
-  default_graphical_set = {
-    base = { position = { 225, 17 }, corner_size = 8 },
-    shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" },
-  },
-  hovered_font_color = button_hovered_font_color,
-  hovered_graphical_set = {
-    base = { position = { 369, 17 }, corner_size = 8 },
-    shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" },
-  },
-  clicked_font_color = button_hovered_font_color,
-  clicked_graphical_set = {
-    base = { position = { 352, 17 }, corner_size = 8 },
-    shadow = { position = { 440, 24 }, corner_size = 8, draw_type = "outer" },
-  },
-}
-
 styles.kr_planetary_teleporter_destinations_frame = {
   type = "frame_style",
   parent = "deep_frame_in_shallow_frame",
-  width = 600,
-  minimal_height = 257 * 2,
+}
+
+styles.kr_planetary_teleporter_destinations_scroll_pane = {
+  type = "scroll_pane_style",
+  parent = "flib_naked_scroll_pane_no_padding",
+  width = (200 * 3) + 12,
+  height = 200 * 3,
   background_graphical_set = {
     position = { 282, 17 },
     corner_size = 8,
-    overall_tiling_vertical_size = 257 - 12,
+    overall_tiling_vertical_size = 200 - 12,
     overall_tiling_vertical_spacing = 12,
     overall_tiling_vertical_padding = 6,
     overall_tiling_horizontal_size = 200 - 12,
     overall_tiling_horizontal_spacing = 12,
     overall_tiling_horizontal_padding = 6,
-  },
-}
-
-styles.kr_planetary_teleporter_destinations_scroll_pane = {
-  type = "scroll_pane_style",
-  parent = "filter_scroll_pane",
-  bottom_margin = 12,
-  bottom_padding = 0,
-  extra_bottom_padding_when_activated = 0,
-  height = 257 * 2,
-  graphical_set = {
-    base = { position = { 85, 0 }, corner_size = 8, draw_type = "outer" },
-    shadow = default_inner_shadow,
   },
 }
 
@@ -421,8 +393,40 @@ styles.kr_planetary_teleporter_destination_name_button = {
 
 styles.kr_planetary_teleporter_destination_charge_bar = {
   type = "progressbar_style",
+  bar = { position = { 305, 39 }, corner_size = 4 },
+  bar_shadow = {
+    base = { position = { 296, 39 }, corner_size = 4 },
+    shadow = {
+      left = { position = { 456, 152 }, size = { 16, 1 } },
+      center = { position = { 472, 152 }, size = { 1, 1 } },
+      right = { position = { 473, 152 }, size = { 16, 1 } },
+    },
+  },
+  bar_width = 4,
+  color = { g = 1 },
   width = 176,
-  top_margin = -2,
+}
+
+data:extend({
+  {
+    type = "font",
+    name = "kr-planetary-teleporter-destination",
+    from = "default-semibold",
+    size = 14,
+    border = true,
+    border_color = {},
+  },
+})
+
+styles.kr_planetary_teleporter_destination_label = {
+  type = "label_style",
+  font = "kr-planetary-teleporter-destination",
+  font_color = default_font_color,
+  width = 176,
+  height = 176,
+  vertical_align = "bottom",
+  padding = 4,
+  left_padding = 8,
 }
 
 styles.kr_subheader_bold_label = {
