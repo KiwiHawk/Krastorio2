@@ -12,14 +12,11 @@ local flib_math = require("__flib__/math")
 --- @param from LuaEntity
 --- @param to LuaEntity
 local function teleport_player(player, from, to)
-  -- Discharge both entities
   from.energy = 0
   to.energy = 0
-  -- Teleport player
   local position = to.position
   position.y = position.y + 1.1
   player.teleport(position, to.surface)
-  -- Play sounds
   from.surface.play_sound({
     path = "kr-planetary-teleporter-effect-sound",
     volume_modifier = 0.8,
@@ -30,6 +27,29 @@ local function teleport_player(player, from, to)
     position = to.position,
     volume_modifier = 1,
   })
+end
+
+--- @param self PlanetaryTeleporterGui
+local function filter_destinations(self)
+  local search_query = self.search_query
+  for _, frame in pairs(self.elems.destinations_table.children) do
+    if search_query == "" then
+      frame.visible = true
+      goto continue
+    end
+    local unit_number = tonumber(frame.name) --[[@as uint]]
+    local data = global.planetary_teleporter[unit_number]
+    if not data then
+      frame.destroy()
+      goto continue
+    end
+    if data.name and string.find(string.lower(data.name), search_query, nil, true) then
+      frame.visible = true
+    else
+      frame.visible = false
+    end
+    ::continue::
+  end
 end
 
 --- @param self PlanetaryTeleporterGui
@@ -47,7 +67,11 @@ local function toggle_search(self, by_click)
   if self.search_open then
     search_textfield.focus()
     search_textfield.select_all()
+  else
+    self.search_query = ""
   end
+
+  filter_destinations(self)
 end
 
 --- @param e EventData.on_gui_closed|EventData.on_gui_click
@@ -78,6 +102,7 @@ local function on_search_textfield_text_changed(e)
     return
   end
   self.search_query = e.element.text
+  filter_destinations(self)
 end
 
 --- @param e EventData.on_gui_click|EventData.CustomInputEvent
@@ -154,18 +179,12 @@ local function update_gui(self)
   local data = global.planetary_teleporter[self.entity.unit_number]
   self.elems.name_label.caption = data.name or { "gui.kr-planetary-teleporter-unnamed" }
 
-  local search_query = self.search_query
   for _, frame in pairs(self.elems.destinations_table.children) do
     local unit_number = tonumber(frame.name) --[[@as uint]]
     local data = global.planetary_teleporter[unit_number]
     if not data then
       goto continue
     end
-    if search_query ~= "" and (not data.name or not string.find(string.lower(data.name), search_query, nil, true)) then
-      frame.visible = false
-      goto continue
-    end
-    frame.visible = true
     local entity = data.entities.base
     local charge = entity.energy / buffer_capacity
     local fully_charged = flib_math.round(charge, 0.1) == 1
